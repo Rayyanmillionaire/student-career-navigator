@@ -1,0 +1,76 @@
+[
+    {
+        "id": "full-stack",
+        "title": "Full Stack Development",
+        "icon": "layers",
+        "color": "blue",
+        "description": "Master both frontend and backend development to build complete web applications.",
+        "duration": "6-12 months",
+        "difficulty": "Intermediate",
+        "levels": [
+            {
+                "name": "Beginner",
+                "steps": [
+                    { "id": "html-css", "title": "HTML5 & CSS3", "description": "Semantic markup and responsive styling", "resources": ["MDN Web Docs", "freeCodeCamp"] },
+                    { "id": "js-basics", "title": "JavaScript Basics", "description": "Variables, functions, loops, DOM manipulation", "resources": ["javascript.info"] }
+                ]
+            },
+            {
+                "name": "Intermediate",
+                "steps": [
+                    { "id": "react", "title": "React.js", "description": "Components, state management, hooks", "resources": ["React Docs"] },
+                    { "id": "node", "title": "Node.js & Express", "description": "Server-side JS and building REST APIs", "resources": ["NodeJS.org"] }
+                ]
+            },
+            {
+                "name": "Advanced",
+                "steps": [
+                    { "id": "db", "title": "Databases (SQL/NoSQL)", "description": "PostgreSQL, MongoDB integration", "resources": [] },
+                    { "id": "auth", "title": "Authentication & Security", "description": "JWT, OAuth, secure headers", "resources": [] }
+                ]
+            }
+        ],
+        "skills": ["HTML", "CSS", "JavaScript", "React", "Node.js", "MongoDB"],
+        "projects": [
+            { "title": "Portfolio Website", "description": "Build a responsive personal portfolio" },
+            { "title": "E-commerce API", "description": "RESTful API with Node and Express" }
+        ],
+        "certifications": [
+            { "title": "Meta Front-End Developer", "provider": "Coursera" }
+        ]
+    },
+    {
+        "id": "java-dev",
+        "title": "Java Development",
+        "icon": "coffee",
+        "color": "warning",
+        "description": "Learn enterprise-grade backend development using Java and Spring Boot.",
+        "duration": "6-9 months",
+        "difficulty": "Intermediate",
+        "levels": [
+            { "name": "Beginner", "steps": [{ "id": "java-basics", "title": "Java Fundamentals", "description": "OOP, Data Types" }] },
+            { "name": "Intermediate", "steps": [{ "id": "spring", "title": "Spring Boot Basics", "description": "REST APIs, Dependency Injection" }] },
+            { "name": "Advanced", "steps": [{ "id": "microservices", "title": "Microservices", "description": "Spring Cloud, Docker" }] }
+        ],
+        "skills": ["Java", "Spring Boot", "SQL", "Hibernate", "Maven"],
+        "projects": [],
+        "certifications": []
+    },
+    {
+        "id": "python-dev",
+        "title": "Python Development",
+        "icon": "code",
+        "color": "success",
+        "description": "Versatile programming for web, automation, and data.",
+        "duration": "3-6 months",
+        "difficulty": "Beginner Friendly",
+        "levels": [
+            { "name": "Beginner", "steps": [{ "id": "py-basics", "title": "Python Syntax", "description": "Lists, dicts, functions" }] },
+            { "name": "Intermediate", "steps": [{ "id": "django", "title": "Django / Flask", "description": "Web frameworks" }] },
+            { "name": "Advanced", "steps": [{ "id": "async", "title": "Asyncio & FastApi", "description": "High performance APIs" }] }
+        ],
+        "skills": ["Python", "Django", "Flask", "Pandas"],
+        "projects": [],
+        "certifications": []
+    }
+]
