@@ -76,22 +76,28 @@ const Router = {
         const sidebar = document.getElementById('sidebar');
         const topbar = document.getElementById('topbar');
         
+        const mobileNav = document.getElementById('mobileNav');
+        
         // Shell visibility
         const isAuthOrLanding = ['/', '/login', '/signup', '/forgot-password', '/verify'].includes(route.path);
         
         if (isAuthOrLanding) {
             if(sidebar) sidebar.classList.add('hidden');
             if(topbar) topbar.classList.add('hidden');
+            if(mobileNav) mobileNav.classList.add('hidden');
             if(mainContent) {
                 mainContent.style.marginLeft = '0';
                 mainContent.style.paddingTop = '0';
+                mainContent.style.paddingBottom = '0';
             }
         } else {
             if(sidebar) sidebar.classList.remove('hidden');
             if(topbar) topbar.classList.remove('hidden');
+            if(mobileNav) mobileNav.classList.remove('hidden');
             if(mainContent) {
                 mainContent.style.marginLeft = '';
                 mainContent.style.paddingTop = '';
+                mainContent.style.paddingBottom = '';
             }
         }
         
