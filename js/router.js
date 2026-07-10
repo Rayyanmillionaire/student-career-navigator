@@ -95,18 +95,19 @@ const Router = {
             }
         }
         
-        // Update sidebar active state
-        document.querySelectorAll('.sidebar__item').forEach(item => {
-            item.classList.remove('sidebar__item--active');
-            const itemRoute = item.getAttribute('data-route');
-            // Basic matching for sidebar highlighting
-            if (itemRoute && path.startsWith(itemRoute) && (itemRoute !== '/' || path === '/')) {
-                 // Prevent / highlighting everything, only highlight if path is exactly / or starts with itemRoute
-                 if (itemRoute !== '/' || path === '/') {
-                     item.classList.add('sidebar__item--active');
-                 }
-            }
-        });
+        // Update sidebar and mobile nav active state
+        const updateActiveState = (selector, activeClass) => {
+            document.querySelectorAll(selector).forEach(item => {
+                item.classList.remove(activeClass);
+                const href = item.getAttribute('href') || item.getAttribute('data-route');
+                const itemRoute = href ? (href.startsWith('#') ? href.slice(1) : href) : null;
+                if (itemRoute && path.startsWith(itemRoute) && (itemRoute !== '/' || path === '/')) {
+                    item.classList.add(activeClass);
+                }
+            });
+        };
+        updateActiveState('.sidebar__item', 'sidebar__item--active');
+        updateActiveState('.mobile-nav__item', 'mobile-nav__item--active');
         
         // Cleanup old
         if (this.currentModule && this.currentModule.cleanup) {
