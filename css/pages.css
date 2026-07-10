@@ -163,6 +163,16 @@
     .hero__content { align-items: center; }
     .hero__title { font-size: var(--font-4xl); }
     .hero__illustration { height: 300px; width: 100%; }
+    
+    .features-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .stats-section {
+        flex-direction: column;
+        gap: var(--space-xl);
+        align-items: center;
+    }
 }
 
 /* Auth Pages */
