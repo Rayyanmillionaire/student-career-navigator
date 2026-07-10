@@ -38,7 +38,7 @@ const AuthPage = {
                                 <label class="form-label">Email Address</label>
                                 <div class="input-group">
                                     <i data-lucide="mail" class="input-group__icon"></i>
-                                    <input type="email" id="email" class="form-input" placeholder="student@example.com" required value="${isLogin ? 'student@scn.com' : ''}">
+                                    <input type="email" id="email" class="form-input" placeholder="student@example.com" required>
                                 </div>
                             </div>
                             
@@ -46,7 +46,7 @@ const AuthPage = {
                                 <label class="form-label">Password</label>
                                 <div class="input-group">
                                     <i data-lucide="lock" class="input-group__icon"></i>
-                                    <input type="password" id="password" class="form-input" placeholder="••••••••" required value="${isLogin ? 'student123' : ''}">
+                                    <input type="password" id="password" class="form-input" placeholder="••••••••" required>
                                     <button type="button" class="password-toggle" id="togglePassword">
                                         <i data-lucide="eye"></i>
                                     </button>
