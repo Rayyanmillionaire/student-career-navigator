@@ -1,89 +1,68 @@
 import Store from './store.js';
-import Utils from './utils.js';
 
-const USERS_KEY = 'scn_users';
 const SESSION_KEY = 'scn_session';
+
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:8080'
+    : 'https://student-career-navigator-api.onrender.com'; // Replace with production URL
 
 const Auth = {
     init() {
-        // Seed demo accounts if no users exist
-        let users = this._getUsers();
-        if (users.length === 0) {
-            users.push({
-                id: 'admin_1',
-                name: 'Admin User',
-                email: 'admin@scn.com',
-                password: 'admin123',
-                role: 'admin',
-                createdAt: new Date().toISOString()
-            });
-            users.push({
-                id: 'student_1',
-                name: 'Student Demo',
-                email: 'student@scn.com',
-                password: 'student123',
-                role: 'student',
-                college: 'Demo University',
-                semester: '4',
-                createdAt: new Date().toISOString()
-            });
-            localStorage.setItem(USERS_KEY, JSON.stringify(users));
-        }
+        // No local seeding needed since database handles user records
     },
 
-    _getUsers() {
-        const data = localStorage.getItem(USERS_KEY);
+    async login(email, password, remember = false) {
         try {
-            return data ? JSON.parse(data) : [];
-        } catch(e) { return []; }
-    },
-    
-    _setUsers(users) {
-        localStorage.setItem(USERS_KEY, JSON.stringify(users));
-    },
-
-    login(email, password, remember = false) {
-        const users = this._getUsers();
-        const user = users.find(u => u.email === email && u.password === password);
-        
-        if (user) {
-            const sessionData = { userId: user.id, token: Utils.generateId() };
-            if (remember) {
-                localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
+            const res = await fetch(`${API_URL}/api/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+            if (res.ok && data.token) {
+                const sessionData = { userId: data.user.id, token: data.token };
+                if (remember) {
+                    localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
+                } else {
+                    sessionStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
+                }
+                Store.setUser(data.user);
+                
+                // Fetch all user data from backend to sync local cache
+                await Store.syncFromBackend();
+                
+                return { success: true, user: data.user };
             } else {
-                sessionStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
+                return { success: false, error: data.error || 'Invalid credentials' };
             }
-            Store.setUser(user);
-            return { success: true, user };
+        } catch (e) {
+            console.error(e);
+            return { success: false, error: 'Connection to server failed' };
         }
-        return { success: false, error: 'Invalid email or password' };
     },
     
-    signup(data) {
-        const users = this._getUsers();
-        if (users.find(u => u.email === data.email)) {
-            return { success: false, error: 'Email already exists' };
+    async signup(data) {
+        try {
+            const res = await fetch(`${API_URL}/api/auth/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: data.name, email: data.email, password: data.password })
+            });
+            const resData = await res.json();
+            if (res.ok && resData.token) {
+                return { success: true, user: resData.user };
+            } else {
+                return { success: false, error: resData.error || 'Signup failed' };
+            }
+        } catch (e) {
+            return { success: false, error: 'Connection to server failed' };
         }
-        
-        const newUser = {
-            id: Utils.generateId(),
-            name: data.name,
-            email: data.email,
-            password: data.password,
-            role: data.role || 'student',
-            createdAt: new Date().toISOString(),
-            ...data
-        };
-        
-        users.push(newUser);
-        this._setUsers(users);
-        return { success: true, user: newUser };
     },
     
     logout() {
         localStorage.removeItem(SESSION_KEY);
         sessionStorage.removeItem(SESSION_KEY);
-        Store.remove('user');
+        Store.clear();
         window.location.hash = '#/';
     },
     
@@ -91,62 +70,81 @@ const Auth = {
         return !!(localStorage.getItem(SESSION_KEY) || sessionStorage.getItem(SESSION_KEY));
     },
     
-    getUser() {
-        if (!this.isAuthenticated()) return null;
-        // Attempt to return latest from users list
+    getToken() {
         const sessionDataStr = localStorage.getItem(SESSION_KEY) || sessionStorage.getItem(SESSION_KEY);
-        if(!sessionDataStr) return null;
-        
+        if (!sessionDataStr) return null;
         try {
-            const sessionData = JSON.parse(sessionDataStr);
-            const users = this._getUsers();
-            const user = users.find(u => u.id === sessionData.userId);
-            if(user) {
-                // Ensure Store has latest
-                Store.setUser(user);
-                return user;
+            return JSON.parse(sessionDataStr).token;
+        } catch(e) {
+            return null;
+        }
+    },
+    
+    async getUser() {
+        if (!this.isAuthenticated()) return null;
+        const user = Store.getUser();
+        if (user) return user;
+        
+        // If user object not cached, fetch it
+        try {
+            const token = this.getToken();
+            const res = await fetch(`${API_URL}/api/user/profile`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const userData = await res.json();
+                Store.setUser(userData);
+                return userData;
             }
-        } catch(e) {}
-        
-        return Store.getUser();
-    },
-    
-    getRole() {
-        const user = this.getUser();
-        return user ? user.role : null;
-    },
-    
-    updateProfile(data) {
-        const user = this.getUser();
-        if (!user) return false;
-        
-        const updatedUser = { ...user, ...data };
-        
-        // Update in users list
-        const users = this._getUsers();
-        const index = users.findIndex(u => u.id === user.id);
-        if (index !== -1) {
-            users[index] = updatedUser;
-            this._setUsers(users);
+        } catch(e) {
+            console.error("Failed to fetch user profile", e);
         }
-        
-        // Update in store
-        Store.setUser(updatedUser);
-        return true;
+        return null;
     },
     
-    changePassword(oldPass, newPass) {
-        const user = this.getUser();
-        if (!user) return { success: false, error: 'Not logged in' };
-        
-        if (user.password !== oldPass) {
-            return { success: false, error: 'Incorrect old password' };
+    async updateProfile(profileData) {
+        try {
+            const token = this.getToken();
+            const res = await fetch(`${API_URL}/api/user/profile`, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(profileData)
+            });
+            if (res.ok) {
+                const data = await res.json();
+                Store.setUser(data.user);
+                return true;
+            }
+        } catch (e) {
+            console.error(e);
         }
-        
-        this.updateProfile({ password: newPass });
-        return { success: true };
+        return false;
+    },
+    
+    async changePassword(oldPassword, newPassword) {
+        try {
+            const token = this.getToken();
+            const res = await fetch(`${API_URL}/api/user/change-password`, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ oldPassword, newPassword })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                return { success: true };
+            } else {
+                return { success: false, error: data.error || 'Password update failed' };
+            }
+        } catch (e) {
+            return { success: false, error: 'Connection to server failed' };
+        }
     }
 };
 
-Auth.init();
 export default Auth;

@@ -103,7 +103,7 @@ const AuthPage = {
         
         // Form submit
         if (form) {
-            form.addEventListener('submit', (e) => {
+            form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 errorEl.classList.add('hidden');
                 
@@ -112,7 +112,7 @@ const AuthPage = {
                 
                 if (isLogin) {
                     const remember = document.getElementById('remember')?.checked || false;
-                    const res = Auth.login(email, password, remember);
+                    const res = await Auth.login(email, password, remember);
                     if (res.success) {
                         Router.navigate('/dashboard');
                     } else {
@@ -124,10 +124,10 @@ const AuthPage = {
                     }
                 } else {
                     const name = document.getElementById('name').value;
-                    const res = Auth.signup({ name, email, password });
+                    const res = await Auth.signup({ name, email, password });
                     if (res.success) {
                         // Auto login after signup
-                        Auth.login(email, password);
+                        await Auth.login(email, password);
                         Router.navigate('/dashboard');
                     } else {
                         errorEl.textContent = res.error;
