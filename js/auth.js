@@ -80,26 +80,9 @@ const Auth = {
         }
     },
     
-    async getUser() {
+    getUser() {
         if (!this.isAuthenticated()) return null;
-        const user = Store.getUser();
-        if (user) return user;
-        
-        // If user object not cached, fetch it
-        try {
-            const token = this.getToken();
-            const res = await fetch(`${API_URL}/api/user/profile`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (res.ok) {
-                const userData = await res.json();
-                Store.setUser(userData);
-                return userData;
-            }
-        } catch(e) {
-            console.error("Failed to fetch user profile", e);
-        }
-        return null;
+        return Store.getUser();
     },
     
     async updateProfile(profileData) {
