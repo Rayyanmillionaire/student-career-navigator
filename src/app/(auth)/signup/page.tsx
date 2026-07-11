@@ -54,7 +54,7 @@ export default function SignupPage() {
       return;
     }
 
-    const res = await signup(name, email);
+    const res = await signup(name, email, password);
     if (res.success) {
       // Auto redirects to dashboard on signup success
       router.push("/dashboard");

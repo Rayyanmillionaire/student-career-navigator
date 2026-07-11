@@ -5,7 +5,7 @@ import { User, AuthState } from "../types/auth";
 
 export interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  signup: (name: string, email: string) => Promise<{ success: boolean; error?: string }>;
+  signup: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   updateProfile: (updates: Partial<User>) => Promise<{ success: boolean; error?: string }>;
   changePassword: (oldPass: string, newPass: string) => Promise<{ success: boolean; error?: string }>;
@@ -136,16 +136,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  const signup = useCallback(async (name: string, email: string) => {
+  const signup = useCallback(async (name: string, email: string, password: string) => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
     try {
-      // The default seeder assigns Rayyan@Admin to admin role. New users get standard student role.
-      // Password seeder sets a default password first which users can change
-      const defaultPassword = "ChangeMe123!"; 
       const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password: defaultPassword }),
+        body: JSON.stringify({ name, email, password }),
       });
 
       const data = await res.json();
