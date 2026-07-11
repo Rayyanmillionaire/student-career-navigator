@@ -141,14 +141,7 @@ export default function LoginPage() {
               </Link>
             </div>
 
-            {/* Demo hints */}
-            <div className="border-t border-border pt-4 mt-6">
-              <div className="text-[10px] font-mono text-muted-foreground space-y-1 text-center bg-white/[0.02] p-2 rounded border border-white/5">
-                <div className="font-semibold text-foreground uppercase tracking-wider text-[9px] mb-1">Demo Accounts</div>
-                <div>Admin: rayyan.officialx@gmail.com / Rayyan@Admin</div>
-                <div>Student: student@scn.com / student123</div>
-              </div>
-            </div>
+
           </motion.div>
         ) : (
           /* FORGOT PASSWORD INSTRUCTION VIEW */
