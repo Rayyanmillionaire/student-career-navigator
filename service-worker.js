@@ -1,4 +1,4 @@
-const CACHE_NAME = 'scn-v6';
+const CACHE_NAME = 'scn-v7';
 const ASSETS = [
     './',
     './index.html',
