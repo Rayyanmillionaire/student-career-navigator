@@ -101,7 +101,10 @@ const AdminPage = {
                         <td><span class="badge ${u.role === 'admin' ? 'badge--danger' : 'badge--primary'}">${u.role}</span></td>
                         <td>${u.createdAt ? Utils.formatDateShort(new Date(u.createdAt)) : '-'}</td>
                         <td>
-                            <button class="btn btn--icon btn--ghost btn--sm text-danger delete-user-btn" data-id="${u.id}" data-name="${u.name}">
+                            <button class="btn btn--icon btn--ghost btn--sm text-accent reset-password-btn" data-id="${u.id}" data-name="${u.name}" title="Reset Password">
+                                <i data-lucide="key"></i>
+                            </button>
+                            <button class="btn btn--icon btn--ghost btn--sm text-danger delete-user-btn" data-id="${u.id}" data-name="${u.name}" title="Delete User">
                                 <i data-lucide="trash-2"></i>
                             </button>
                         </td>
@@ -116,6 +119,15 @@ const AdminPage = {
                         const id = btn.getAttribute('data-id');
                         const name = btn.getAttribute('data-name');
                         await this.deleteUser(id, name);
+                    });
+                });
+
+                // Attach reset password listeners
+                tbody.querySelectorAll('.reset-password-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const id = btn.getAttribute('data-id');
+                        const name = btn.getAttribute('data-name');
+                        await this.promptResetPassword(id, name);
                     });
                 });
             } else {
@@ -155,6 +167,53 @@ const AdminPage = {
             console.error(e);
             Components.toast("Connection to server failed.", "error");
         }
+    },
+
+    async promptResetPassword(id, name) {
+        Components.modal({
+            title: `Reset Password`,
+            content: `
+                <div style="padding: var(--space-sm) 0;">
+                    <p class="text-secondary mb-md">Enter a new temporary password for <strong>${name}</strong>.</p>
+                    <div class="form-group mb-0">
+                        <label class="form-label">New Password</label>
+                        <input type="password" id="resetNewPasswordInput" class="form-input" placeholder="At least 6 characters" required>
+                    </div>
+                </div>
+            `,
+            confirmText: "Reset Password",
+            onConfirm: async () => {
+                const passwordInput = document.getElementById('resetNewPasswordInput');
+                const newPassword = passwordInput ? passwordInput.value : '';
+                
+                if (!newPassword || newPassword.length < 6) {
+                    Components.toast("Password must be at least 6 characters.", "error");
+                    return;
+                }
+
+                const token = Auth.getToken();
+                try {
+                    const res = await fetch(`${API_URL}/api/admin/users/${id}/reset-password`, {
+                        method: 'PUT',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}` 
+                        },
+                        body: JSON.stringify({ newPassword })
+                    });
+                    if (res.ok) {
+                        Components.toast(`Password for ${name} has been reset.`, 'success');
+                        Components.closeModal();
+                    } else {
+                        const err = await res.json();
+                        Components.toast(err.error || "Failed to reset password.", "error");
+                    }
+                } catch(e) {
+                    console.error(e);
+                    Components.toast("Connection to server failed.", "error");
+                }
+            }
+        });
     },
     
     cleanup() {}
