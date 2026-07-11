@@ -38,7 +38,7 @@ const AuthPage = {
                                 <label class="form-label">Roll Number</label>
                                 <div class="input-group">
                                     <i data-lucide="hash" class="input-group__icon"></i>
-                                    <input type="text" id="rollNumber" class="form-input" placeholder="IEMML25CS001" autocomplete="username" required>
+                                    <input type="text" id="rollNumber" class="form-input" placeholder="IEMML25CS001" autocomplete="username" pattern="[A-Za-z]{5}[0-9]{2}[A-Za-z]{2}[0-9]{3}" title="Roll number must match format: IEMML25CS001" required>
                                 </div>
                             </div>
                             
