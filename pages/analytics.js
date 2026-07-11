@@ -72,8 +72,8 @@ const AnalyticsPage = {
                  (catAverages['soft'] || 0) / (catCounts['soft'] || 1)
              ];
         } else {
-             // Mock data if empty
-             data = [80, 60, 40, 70, 90];
+             // Zero data if empty
+             data = [0, 0, 0, 0, 0];
         }
         
         window.Charts.create('skillsChart', {
@@ -91,6 +91,22 @@ const AnalyticsPage = {
             }
         });
         
+        // Calculate studied hours dynamically from studySessions
+        const studySessions = Store.get('studySessions') || [];
+        const hoursPerDay = [0, 0, 0, 0, 0, 0, 0];
+        
+        studySessions.forEach(s => {
+            if (s.date && s.duration) {
+                const date = new Date(s.date);
+                const day = date.getDay(); // 0 is Sun, 1 is Mon, etc.
+                const dayIndex = day === 0 ? 6 : day - 1; // Map to Mon=0, Tue=1 ... Sun=6
+                // duration is stored in seconds in study timer
+                const durationHours = s.duration / 3600;
+                hoursPerDay[dayIndex] += durationHours;
+            }
+        });
+        const activityData = hoursPerDay.map(h => Math.round(h * 10) / 10);
+
         // Activity Line Chart
         window.Charts.create('activityChart', {
             type: 'line',
@@ -98,7 +114,7 @@ const AnalyticsPage = {
                 labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                 datasets: [{
                     label: 'Hours Studied',
-                    data: [2, 3.5, 1, 4, 2.5, 5, 0],
+                    data: activityData,
                     borderColor: colors.purple,
                     tension: 0.4,
                     fill: true,

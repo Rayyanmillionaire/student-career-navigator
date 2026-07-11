@@ -80,13 +80,11 @@ const NotificationsPage = {
     },
 
     init() {
-        // Mock data if empty for demo
+        // Seed welcome notification if empty
         let notifs = Store.get('notifications');
         if (!notifs || notifs.length === 0) {
             notifs = [
-                { id: '1', title: 'Roadmap Milestone Reached', message: 'You completed all React basics. Next up: Redux!', type: 'success', read: false, date: new Date().toISOString() },
-                { id: '2', title: 'Upcoming Deadline', message: 'Application for Google SWE Intern is due tomorrow.', type: 'warning', read: false, date: new Date(Date.now() - 86400000).toISOString() },
-                { id: '3', title: 'New Feature Available', message: 'Check out the new Goal Planner feature.', type: 'info', read: true, date: new Date(Date.now() - 172800000).toISOString() }
+                { id: 'welcome', title: 'Welcome to CareerNav!', message: 'Start by tracking your skills, planning goals, and exploring roadmaps.', type: 'info', read: false, date: new Date().toISOString() }
             ];
             Store.set('notifications', notifs);
         }
