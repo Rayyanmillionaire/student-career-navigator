@@ -106,6 +106,11 @@ const Router = {
             }
         }
         
+        // Update user elements and admin menu item visibility in shell
+        if (window.App && typeof window.App.updateShellUser === 'function') {
+            window.App.updateShellUser();
+        }
+        
         // Update sidebar and mobile nav active state
         const updateActiveState = (selector, activeClass) => {
             document.querySelectorAll(selector).forEach(item => {
