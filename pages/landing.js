@@ -7,7 +7,7 @@ const LandingPage = {
                     <div class="hero__container">
                         <div class="hero__content">
                             <h1 class="hero__title animate-slide-up stagger-1">
-                                Navigate Your Career<br>With Confidence
+                                Navigate Your Career With Confidence
                             </h1>
                             <p class="hero__subtitle animate-slide-up stagger-2">
                                 The all-in-one platform for students to build skills, track goals, and land dream internships. Start your journey today.
