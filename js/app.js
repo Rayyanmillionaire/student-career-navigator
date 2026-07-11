@@ -182,10 +182,10 @@ const App = {
         const user = Auth.getUser();
         if (user) {
             // Show admin nav item if admin
-            const adminNav = document.querySelector('[data-admin-only]');
-            if (adminNav) {
-                adminNav.style.display = user.role === 'admin' ? 'flex' : 'none';
-            }
+            const adminNavs = document.querySelectorAll('[data-admin-only]');
+            adminNavs.forEach(nav => {
+                nav.style.display = user.role === 'admin' ? 'flex' : 'none';
+            });
             
             // Update avatar initials
             const initialsEls = document.querySelectorAll('.avatar__initials');

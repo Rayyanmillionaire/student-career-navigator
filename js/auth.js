@@ -85,6 +85,11 @@ const Auth = {
         return Store.getUser();
     },
     
+    getRole() {
+        const user = this.getUser();
+        return user ? user.role : null;
+    },
+    
     async updateProfile(profileData) {
         try {
             const token = this.getToken();
