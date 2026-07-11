@@ -48,7 +48,7 @@ const AdminPage = {
                                 <tr>
                                     <th>ID</th>
                                     <th>Name</th>
-                                    <th>Roll Number</th>
+                                    <th>Email</th>
                                     <th>Role</th>
                                     <th>Created At</th>
                                     <th>Actions</th>
@@ -97,7 +97,7 @@ const AdminPage = {
                     <tr id="user-row-${u.id}">
                         <td class="font-mono text-xs">${u.id}</td>
                         <td class="font-bold">${u.name}</td>
-                        <td class="font-semibold text-secondary">${u.rollNumber || '-'}</td>
+                        <td class="font-semibold text-secondary">${u.email || '-'}</td>
                         <td><span class="badge ${u.role === 'admin' ? 'badge--danger' : 'badge--primary'}">${u.role}</span></td>
                         <td>${u.createdAt ? Utils.formatDateShort(new Date(u.createdAt)) : '-'}</td>
                         <td>

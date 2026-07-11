@@ -35,10 +35,10 @@ const AuthPage = {
                             ` : ''}
                             
                              <div class="form-group">
-                                <label class="form-label">Roll Number</label>
+                                <label class="form-label">Email Address</label>
                                 <div class="input-group">
-                                    <i data-lucide="hash" class="input-group__icon"></i>
-                                    <input type="text" id="rollNumber" class="form-input" placeholder="IEMML25CS001" autocomplete="username" pattern="[A-Za-z]{5}[0-9]{2}[A-Za-z]{2}[0-9]{3}" title="Roll number must match format: IEMML25CS001" required>
+                                    <i data-lucide="mail" class="input-group__icon"></i>
+                                    <input type="email" id="email" class="form-input" placeholder="student@example.com" autocomplete="email" required>
                                 </div>
                             </div>
                             
@@ -88,14 +88,6 @@ const AuthPage = {
         const isLogin = path === '/login';
         const form = document.getElementById('authForm');
         const errorEl = document.getElementById('authError');
-        
-        // Auto-uppercase roll number as it is typed
-        const rollInput = document.getElementById('rollNumber');
-        if (rollInput) {
-            rollInput.addEventListener('input', () => {
-                rollInput.value = rollInput.value.toUpperCase();
-            });
-        }
 
         // Password toggle
         const toggleBtn = document.getElementById('togglePassword');
@@ -115,12 +107,12 @@ const AuthPage = {
                 e.preventDefault();
                 errorEl.classList.add('hidden');
                 
-                const rollNumber = document.getElementById('rollNumber').value.trim();
+                const email = document.getElementById('email').value.trim();
                 const password = document.getElementById('password').value;
                 
                 if (isLogin) {
                     const remember = document.getElementById('remember')?.checked || false;
-                    const res = await Auth.login(rollNumber, password, remember);
+                    const res = await Auth.login(email, password, remember);
                     if (res.success) {
                         Router.navigate('/dashboard');
                     } else {
@@ -132,10 +124,10 @@ const AuthPage = {
                     }
                 } else {
                     const name = document.getElementById('name').value;
-                    const res = await Auth.signup({ name, rollNumber, password });
+                    const res = await Auth.signup({ name, email, password });
                     if (res.success) {
                         // Auto login after signup
-                        await Auth.login(rollNumber, password);
+                        await Auth.login(email, password);
                         Router.navigate('/dashboard');
                     } else {
                         errorEl.textContent = res.error;

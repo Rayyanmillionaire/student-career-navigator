@@ -11,12 +11,12 @@ const Auth = {
         // No local seeding needed since database handles user records
     },
 
-    async login(rollNumber, password, remember = false) {
+    async login(email, password, remember = false) {
         try {
             const res = await fetch(`${API_URL}/api/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ rollNumber, password })
+                body: JSON.stringify({ email, password })
             });
             const data = await res.json();
             if (res.ok && data.token) {
@@ -46,7 +46,7 @@ const Auth = {
             const res = await fetch(`${API_URL}/api/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: data.name, rollNumber: data.rollNumber, password: data.password })
+                body: JSON.stringify({ name: data.name, email: data.email, password: data.password })
             });
             const resData = await res.json();
             if (res.ok && resData.token) {
