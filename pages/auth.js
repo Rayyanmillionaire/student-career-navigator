@@ -34,11 +34,11 @@ const AuthPage = {
                                 </div>
                             ` : ''}
                             
-                            <div class="form-group">
+                             <div class="form-group">
                                 <label class="form-label">Roll Number</label>
                                 <div class="input-group">
                                     <i data-lucide="hash" class="input-group__icon"></i>
-                                    <input type="text" id="rollNumber" class="form-input" placeholder="IEMML25CS001" required>
+                                    <input type="text" id="rollNumber" class="form-input" placeholder="IEMML25CS001" autocomplete="username" required>
                                 </div>
                             </div>
                             
@@ -46,7 +46,7 @@ const AuthPage = {
                                 <label class="form-label">Password</label>
                                 <div class="input-group">
                                     <i data-lucide="lock" class="input-group__icon"></i>
-                                    <input type="password" id="password" class="form-input" placeholder="••••••••" required>
+                                    <input type="password" id="password" class="form-input" placeholder="••••••••" autocomplete="${isLogin ? 'current-password' : 'new-password'}" required>
                                     <button type="button" class="password-toggle" id="togglePassword">
                                         <i data-lucide="eye"></i>
                                     </button>
