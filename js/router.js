@@ -71,6 +71,11 @@ const Router = {
             this.navigate('/dashboard');
             return;
         }
+        // Redirect authenticated users away from login/signup pages
+        if (!route.options.auth && Auth.isAuthenticated() && ['/login', '/signup'].includes(route.path)) {
+            this.navigate('/dashboard');
+            return;
+        }
         
         const mainContent = document.getElementById('mainContent');
         const sidebar = document.getElementById('sidebar');
