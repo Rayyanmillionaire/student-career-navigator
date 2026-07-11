@@ -29,7 +29,7 @@ const ProfilePage = {
                     </div>
                     <div class="flex-1">
                         <h2 class="font-2xl font-bold mb-xs">${user.name}</h2>
-                        <p class="text-secondary flex items-center gap-xs mb-sm"><i data-lucide="mail" style="width:16px;height:16px"></i> ${user.email}</p>
+                        <p class="text-secondary flex items-center gap-xs mb-sm"><i data-lucide="hash" style="width:16px;height:16px"></i> ${user.rollNumber}</p>
                         <div class="flex gap-sm">
                             ${Components.badge(Utils.capitalize(user.role), 'primary')}
                             ${user.college ? Components.badge(user.college, 'outline') : ''}
@@ -49,9 +49,9 @@ const ProfilePage = {
                                     <input type="text" class="form-input" id="profileName" value="${user.name}" required>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Email</label>
-                                    <input type="email" class="form-input" value="${user.email}" disabled>
-                                    <span class="form-hint">Email cannot be changed</span>
+                                    <label class="form-label">Roll Number</label>
+                                    <input type="text" class="form-input" value="${user.rollNumber}" disabled>
+                                    <span class="form-hint">Roll number cannot be changed</span>
                                 </div>
                             </div>
                             
