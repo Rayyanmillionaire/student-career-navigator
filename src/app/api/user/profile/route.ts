@@ -1,53 +1,87 @@
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { verifyJwt } from "@/lib/jwt";
 
-export async function GET(request: Request) {
+export async function GET(req: Request) {
   try {
-    const authHeader = request.headers.get("Authorization");
-    if (!authHeader) {
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    
-    // Simulate finding the user based on token
-    const token = authHeader.split(" ")[1];
-    
-    let user = {
-      id: Date.now(),
-      name: "Test User",
-      email: "student@scn.com",
-      role: "student"
-    };
 
-    if (token.includes("admin")) {
-      user = {
-        id: 1,
-        name: "Rayyan Millionaire",
-        email: "rayyan.officialx@gmail.com",
-        role: "admin"
-      };
+    const token = authHeader.split(" ")[1];
+    const decoded = verifyJwt(token);
+
+    if (!decoded) {
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
-    return NextResponse.json(user);
-  } catch (e) {
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        bio: true,
+        phone: true,
+        location: true,
+      }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(user, { status: 200 });
+  } catch (error: any) {
+    console.error("Profile GET Error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
-export async function PUT(request: Request) {
+export async function PUT(req: Request) {
   try {
-    const updates = await request.json();
-    
-    // Just echo back the updates merged with a mock user
-    return NextResponse.json({
-      success: true,
-      user: {
-        id: 2,
-        name: updates.name || "Test Student",
-        email: updates.email || "student@scn.com",
-        role: "student",
-        ...updates
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const token = authHeader.split(" ")[1];
+    const decoded = verifyJwt(token);
+
+    if (!decoded) {
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const { name, bio, phone, location } = body;
+
+    const updatedUser = await prisma.user.update({
+      where: { id: decoded.userId },
+      data: {
+        ...(name && { name }),
+        ...(bio !== undefined && { bio }),
+        ...(phone !== undefined && { phone }),
+        ...(location !== undefined && { location }),
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        bio: true,
+        phone: true,
+        location: true,
       }
     });
-  } catch (e) {
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+
+    return NextResponse.json(
+      { message: "Profile updated successfully", user: updatedUser },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error("Profile PUT Error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
