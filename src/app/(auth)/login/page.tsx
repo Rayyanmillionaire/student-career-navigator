@@ -77,7 +77,7 @@ function LoginForm() {
   };
 
   return (
-    <AuthLayout title="Welcome Back" subtitle="Log in to continue to your dashboard.">
+    <AuthLayout title="Welcome Back" subtitle="Sign in to continue your career journey.">
       <motion.form 
         onSubmit={handleSubmit(onSubmit)} 
         className="space-y-4"
@@ -108,13 +108,13 @@ function LoginForm() {
               <input 
                 type="checkbox" 
                 {...register("rememberMe")}
-                className="w-3.5 h-3.5 rounded border-border text-accent-blue focus:ring-accent-blue/20 bg-muted/50"
+                className="w-4 h-4 rounded-[4px] border-[#D1D5DB] text-[#6366F1] focus:ring-[#6366F1]/20 cursor-pointer"
               />
-              <span className="text-xs text-muted-foreground select-none hover:text-foreground transition-colors">Remember Me</span>
+              <span className="text-[14px] text-[#6B7280] select-none hover:text-[#111827] transition-colors">Remember Me</span>
             </label>
             <Link 
               href="/forgot-password" 
-              className="text-xs font-semibold text-accent-blue hover:text-accent-blue/80 transition-colors"
+              className="text-[14px] font-semibold text-[#6366F1] hover:text-[#4F46E5] hover:underline transition-all"
             >
               Forgot Password?
             </Link>
@@ -134,14 +134,12 @@ function LoginForm() {
 
       <SocialLoginButtons isLoading={isSubmitting} />
 
-      <div className="text-center text-sm text-muted-foreground pt-4">
+      <div className="text-center text-[15px] text-[#6B7280] pt-6">
         Don't have an account?{" "}
-        <Link href="/signup" className="font-semibold text-accent-blue hover:text-accent-blue/80 transition-colors">
-          Create Account
+        <Link href="/signup" className="font-semibold text-[#6366F1] hover:text-[#4F46E5] hover:underline transition-all">
+          Sign Up
         </Link>
       </div>
-
-      <TrustSection />
     </AuthLayout>
   );
 }

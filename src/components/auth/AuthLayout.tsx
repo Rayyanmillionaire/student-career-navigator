@@ -2,7 +2,8 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Compass, CheckCircle2, TrendingUp, Briefcase } from "lucide-react";
+import { Compass, Sparkles, TrendingUp, Briefcase, FileText, Target, CheckCircle2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function AuthLayout({
   children,
@@ -14,35 +15,35 @@ export default function AuthLayout({
   subtitle: string;
 }) {
   return (
-    <div className="min-h-screen flex w-full bg-white text-gray-900 font-sans selection:bg-blue-100">
+    <div className="min-h-screen flex w-full bg-white text-[#111827] font-sans selection:bg-[#6366F1]/20">
       
       {/* LEFT PANEL - Form Section */}
-      <div className="w-full lg:w-[480px] flex flex-col justify-between p-8 sm:p-12 border-r border-gray-200 bg-white relative z-10 shadow-2xl shadow-gray-200/50">
+      <div className="w-full lg:w-[480px] flex flex-col p-8 sm:p-12 relative z-10 bg-white">
         
         {/* Brand Header */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="flex items-center gap-3"
+          className="flex items-center gap-3 mb-16"
         >
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6366F1] to-[#818CF8] flex items-center justify-center shadow-lg shadow-[#6366F1]/20 transition-transform hover:scale-105 cursor-pointer">
             <Compass className="w-6 h-6 text-white" />
           </div>
-          <span className="font-bold text-xl tracking-tight bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-            Student Career Navigator
+          <span className="font-bold text-xl tracking-tight text-[#111827]">
+            CareerNav
           </span>
         </motion.div>
 
         {/* Dynamic Form Content */}
-        <div className="flex-1 flex flex-col justify-center mt-12 mb-8 max-w-[400px] w-full mx-auto">
+        <div className="flex-1 flex flex-col justify-center max-w-[400px] w-full mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
           >
-            <h1 className="text-3xl font-bold tracking-tight mb-2 text-gray-900">{title}</h1>
-            <p className="text-gray-500 text-sm mb-8">{subtitle}</p>
+            <h1 className="text-[40px] leading-[48px] font-bold tracking-tight mb-3 text-[#111827]">{title}</h1>
+            <p className="text-[#6B7280] text-base mb-10">{subtitle}</p>
           </motion.div>
 
           <motion.div
@@ -59,84 +60,121 @@ export default function AuthLayout({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="text-xs text-gray-400 font-medium tracking-wide"
+          className="mt-12 text-[13px] text-[#6B7280] font-medium flex justify-between items-center"
         >
-          © 2026 CareerNav Inc. • Secured by AES-256
+          <span>© 2026 CareerNav Inc.</span>
+          <div className="flex gap-4">
+            <a href="#" className="hover:text-[#111827] transition-colors">Privacy</a>
+            <a href="#" className="hover:text-[#111827] transition-colors">Terms</a>
+          </div>
         </motion.div>
       </div>
 
-      {/* RIGHT PANEL - Premium Light Theme Branding Presentation */}
-      <div className="hidden lg:flex flex-1 relative items-center justify-center overflow-hidden bg-slate-50">
+      {/* RIGHT PANEL - Premium Illustration */}
+      <div className="hidden lg:flex flex-1 relative items-center justify-center overflow-hidden bg-[#F8FAFC]">
         
         {/* Background Gradients & Textures */}
-        <div className="absolute inset-0 w-full h-full bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.1),rgba(255,255,255,0))]" />
+        <div className="absolute inset-0 w-full h-full bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(99,102,241,0.08),rgba(255,255,255,0))]" />
         
         {/* Subtle grid pattern */}
-        <div className="absolute inset-0 w-full h-full" style={{ backgroundImage: 'radial-gradient(#e5e7eb 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+        <div className="absolute inset-0 w-full h-full opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(#111827 1px, transparent 1px), linear-gradient(90deg, #111827 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
-        {/* Floating Abstract Elements */}
+        {/* Animated Gradient Blobs */}
         <motion.div 
-          animate={{ 
-            y: [0, -20, 0],
-            rotate: [0, 5, 0]
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[15%] left-[20%] w-[300px] h-[300px] bg-blue-400/20 rounded-full blur-[80px]"
+          animate={{ y: [0, -30, 0], scale: [1, 1.05, 1], rotate: [0, 10, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-[20%] left-[25%] w-[400px] h-[400px] bg-[#6366F1]/10 rounded-full blur-[100px]"
         />
         <motion.div 
-          animate={{ 
-            y: [0, 20, 0],
-            rotate: [0, -5, 0]
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="absolute bottom-[20%] right-[15%] w-[400px] h-[400px] bg-purple-400/20 rounded-full blur-[100px]"
+          animate={{ y: [0, 30, 0], scale: [1, 1.1, 1], rotate: [0, -10, 0] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          className="absolute bottom-[20%] right-[20%] w-[500px] h-[500px] bg-emerald-400/10 rounded-full blur-[120px]"
         />
 
-        {/* Central Presentation Card */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2, type: "spring" }}
-          className="relative z-10 max-w-[500px] w-full mx-8"
-        >
-          <div className="bg-white/80 backdrop-blur-xl border border-white rounded-3xl p-10 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] text-center relative overflow-hidden">
-            {/* Glossy highlight */}
-            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white to-transparent opacity-80" />
-            
-            <div className="inline-flex items-center justify-center p-4 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 shadow-sm mb-6">
-              <TrendingUp className="w-10 h-10 text-blue-600" />
+        {/* Central UI Presentation */}
+        <div className="relative z-10 w-full max-w-[600px] aspect-square">
+          
+          {/* Main Floating Card */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, type: "spring", bounce: 0.4 }}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] bg-white/90 backdrop-blur-xl border border-[#E5E7EB] rounded-[24px] p-8 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.08)] flex flex-col items-center text-center z-20"
+          >
+            <div className="w-16 h-16 rounded-2xl bg-[#F8FAFC] border border-[#E5E7EB] flex items-center justify-center mb-6 shadow-sm">
+              <Sparkles className="w-8 h-8 text-[#6366F1]" />
             </div>
-            
-            <h2 className="text-3xl font-bold mb-4 bg-gradient-to-br from-gray-900 to-gray-600 bg-clip-text text-transparent">
-              Elevate Your Career Trajectory
-            </h2>
-            <p className="text-gray-500 text-sm leading-relaxed mb-8">
-              Join thousands of top-tier students landing their dream roles at Fortune 500 companies through our intelligent application tracking platform.
+            <h3 className="text-xl font-bold text-[#111827] mb-2">AI-Powered Journey</h3>
+            <p className="text-[#6B7280] text-sm leading-relaxed mb-6">
+              Track applications, optimize your resume, and prepare for interviews intelligently.
             </p>
-
-            {/* Feature Pills */}
-            <div className="flex flex-col gap-3">
-              <FeaturePill icon={<CheckCircle2 className="w-4 h-4 text-emerald-500" />} text="AI-Powered Resume Optimization" />
-              <FeaturePill icon={<Briefcase className="w-4 h-4 text-blue-500" />} text="Real-time Application Tracking" />
-              <FeaturePill icon={<TrendingUp className="w-4 h-4 text-purple-500" />} text="Predictive Salary Analytics" />
+            
+            <div className="w-full bg-[#F8FAFC] rounded-xl h-2 overflow-hidden">
+              <motion.div 
+                initial={{ width: 0 }}
+                animate={{ width: "75%" }}
+                transition={{ duration: 1.5, delay: 0.8, ease: "easeOut" }}
+                className="h-full bg-gradient-to-r from-[#6366F1] to-[#818CF8] rounded-xl"
+              />
             </div>
-          </div>
-        </motion.div>
+            <div className="flex justify-between w-full mt-2 text-[11px] font-medium text-[#6B7280]">
+              <span>Profile Strength</span>
+              <span className="text-[#6366F1]">75%</span>
+            </div>
+          </motion.div>
+
+          {/* Floating Feature Cards */}
+          <FloatingCard 
+            delay={0.4} 
+            className="top-[15%] left-[5%] z-10"
+            icon={<Briefcase className="w-5 h-5 text-blue-500" />}
+            title="Application Tracking"
+            subtitle="Real-time updates"
+          />
+          <FloatingCard 
+            delay={0.6} 
+            className="bottom-[20%] left-[10%] z-30"
+            icon={<FileText className="w-5 h-5 text-purple-500" />}
+            title="Resume AI"
+            subtitle="ATS optimized"
+          />
+          <FloatingCard 
+            delay={0.5} 
+            className="top-[25%] right-[5%] z-10"
+            icon={<Target className="w-5 h-5 text-emerald-500" />}
+            title="Interview Prep"
+            subtitle="Targeted questions"
+          />
+          <FloatingCard 
+            delay={0.7} 
+            className="bottom-[15%] right-[12%] z-30"
+            icon={<TrendingUp className="w-5 h-5 text-orange-500" />}
+            title="Career Analytics"
+            subtitle="Predictive insights"
+          />
+          
+        </div>
       </div>
     </div>
   );
 }
 
-function FeaturePill({ icon, text }: { icon: React.ReactNode; text: string }) {
+function FloatingCard({ icon, title, subtitle, className, delay }: { icon: React.ReactNode, title: string, subtitle: string, className: string, delay: number }) {
   return (
-    <motion.div 
-      whileHover={{ scale: 1.02, x: 5 }}
-      className="flex items-center gap-3 bg-white border border-gray-100 p-3 rounded-xl shadow-sm cursor-default transition-colors hover:border-blue-100"
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.6, delay, type: "spring", bounce: 0.4 }}
+      whileHover={{ y: -5, scale: 1.02 }}
+      className={cn("absolute bg-white/90 backdrop-blur-md border border-[#E5E7EB] rounded-[16px] p-4 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.08)] flex items-center gap-4 cursor-default", className)}
     >
-      <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center border border-gray-100">
+      <div className="w-10 h-10 rounded-xl bg-[#F8FAFC] flex items-center justify-center border border-[#E5E7EB]">
         {icon}
       </div>
-      <span className="text-sm font-medium text-gray-700">{text}</span>
+      <div>
+        <h4 className="text-[13px] font-bold text-[#111827]">{title}</h4>
+        <p className="text-[11px] font-medium text-[#6B7280]">{subtitle}</p>
+      </div>
     </motion.div>
   );
 }

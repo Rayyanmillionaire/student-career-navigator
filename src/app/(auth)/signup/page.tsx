@@ -92,7 +92,7 @@ export default function SignupPage() {
   };
 
   return (
-    <AuthLayout title="Create Account" subtitle="Join CareerNav and accelerate your future.">
+    <AuthLayout title="Create Your Account" subtitle="Join thousands of students preparing for successful careers.">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         
         <div className="grid grid-cols-2 gap-3">
@@ -150,38 +150,35 @@ export default function SignupPage() {
           />
           
           <div className="space-y-1.5 w-full">
-            <label className="text-[14px] font-medium text-secondary-foreground invisible">Role</label>
+            <label className="text-[14px] font-medium text-[#6B7280] invisible">Role</label>
             <div className="relative">
-              <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground z-10" />
+              <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF] z-10 pointer-events-none" />
               <select
                 {...register("role")}
-                className="w-full h-[52px] pl-[44px] pr-4 bg-background dark:bg-zinc-900 border border-border rounded-[14px] text-sm text-foreground focus:outline-none focus:border-accent-blue focus:ring-2 focus:ring-accent-blue/30 appearance-none transition-all duration-300"
+                className="w-full h-[56px] pl-11 pr-4 bg-white border border-[#D1D5DB] rounded-[14px] text-[16px] text-[#111827] focus:outline-none focus:border-[#6366F1] focus:ring-4 focus:ring-[#6366F1]/10 hover:border-[#9CA3AF] appearance-none transition-all duration-200"
               >
                 <option value="student">Student</option>
                 <option value="faculty">Faculty</option>
                 <option value="recruiter">Recruiter</option>
               </select>
-              <label className="absolute left-[44px] top-2 text-[10px] font-semibold tracking-wide uppercase text-muted-foreground pointer-events-none z-10">
-                I am a...
-              </label>
             </div>
-            {errors.role && <span className="text-danger text-[12px] font-medium px-1">{errors.role.message}</span>}
+            {errors.role && <span className="text-[#EF4444] text-[13px] font-medium mt-1">{errors.role.message}</span>}
           </div>
         </div>
 
-        <label className="flex items-start gap-2.5 pt-2 cursor-pointer group">
+        <label className="flex items-start gap-3 pt-2 cursor-pointer group">
           <div className="pt-0.5">
             <input 
               type="checkbox" 
               {...register("acceptTerms")}
-              className="w-4 h-4 rounded border-border text-accent-blue focus:ring-accent-blue/20 bg-muted/50 cursor-pointer"
+              className="w-4 h-4 rounded-[4px] border-[#D1D5DB] text-[#6366F1] focus:ring-[#6366F1]/20 cursor-pointer mt-0.5"
             />
           </div>
-          <span className="text-[11px] text-muted-foreground leading-relaxed group-hover:text-foreground transition-colors">
+          <span className="text-[14px] text-[#6B7280] leading-relaxed group-hover:text-[#111827] transition-colors">
             By creating an account, you agree to our{" "}
-            <Link href="/terms" className="text-accent-blue font-medium hover:underline">Terms of Service</Link>{" "}
+            <Link href="/terms" className="text-[#6366F1] font-medium hover:underline hover:text-[#4F46E5]">Terms of Service</Link>{" "}
             and{" "}
-            <Link href="/privacy" className="text-accent-blue font-medium hover:underline">Privacy Policy</Link>.
+            <Link href="/privacy" className="text-[#6366F1] font-medium hover:underline hover:text-[#4F46E5]">Privacy Policy</Link>.
           </span>
         </label>
         {errors.acceptTerms && (
@@ -203,14 +200,12 @@ export default function SignupPage() {
 
       <SocialLoginButtons isLoading={isSubmitting} />
 
-      <div className="text-center text-sm text-muted-foreground pt-4">
+      <div className="text-center text-[15px] text-[#6B7280] pt-6">
         Already have an account?{" "}
-        <Link href="/login" className="font-semibold text-accent-blue hover:text-accent-blue/80 transition-colors">
+        <Link href="/login" className="font-semibold text-[#6366F1] hover:text-[#4F46E5] hover:underline transition-all">
           Sign In
         </Link>
       </div>
-      
-      <TrustSection />
     </AuthLayout>
   );
 }

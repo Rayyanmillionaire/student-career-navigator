@@ -68,12 +68,12 @@ function VerifyEmailContent() {
             <MailCheck className="w-8 h-8 text-green-500" />
           </div>
           <h2 className="text-xl font-bold">Email Verified!</h2>
-          <p className="text-sm text-muted-foreground px-4">
+          <p className="text-[14px] text-[#6B7280] px-4">
             Your email has been successfully verified. You can now access all features of CareerNav.
           </p>
           <Link 
             href="/dashboard" 
-            className="mt-6 w-full h-11 bg-accent-blue hover:bg-accent-blue/90 text-white rounded-md font-semibold flex items-center justify-center gap-2 transition-colors"
+            className="mt-6 w-full h-[56px] bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl font-bold text-[16px] flex items-center justify-center gap-2 transition-colors"
           >
             Go to Dashboard
             <ArrowRight className="w-4 h-4" />
@@ -89,11 +89,11 @@ function VerifyEmailContent() {
         
         {isVerifying ? (
           <div className="flex flex-col items-center gap-3">
-            <RefreshCcw className="w-8 h-8 text-accent-blue animate-spin" />
-            <p className="text-sm font-medium">Verifying your email...</p>
+            <RefreshCcw className="w-8 h-8 text-[#6366F1] animate-spin" />
+            <p className="text-[14px] font-medium text-[#111827]">Verifying your email...</p>
           </div>
         ) : (
-          <div className="bg-muted/30 border border-border p-4 rounded-lg text-sm text-center">
+          <div className="bg-[#F8FAFC] border border-[#E5E7EB] p-4 rounded-xl text-[14px] text-center text-[#6B7280]">
             Click the link in the email to verify your account. If you don't see it, check your spam folder.
           </div>
         )}
@@ -104,7 +104,7 @@ function VerifyEmailContent() {
             isLoading={false}
             disabled={cooldown > 0 || isVerifying}
             onClick={handleResend}
-            className="bg-muted text-foreground hover:bg-muted/80 shadow-none border border-border"
+            className="bg-white text-[#111827] hover:bg-[#F8FAFC] shadow-none border border-[#E5E7EB]"
           >
             {cooldown > 0 ? `Resend available in ${cooldown}s` : "Resend Verification Email"}
           </LoadingButton>
@@ -112,7 +112,7 @@ function VerifyEmailContent() {
           <button
             type="button"
             onClick={() => router.push("/dashboard")}
-            className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors font-medium py-2"
+            className="w-full text-[14px] text-[#6B7280] hover:text-[#111827] transition-colors font-medium py-2"
           >
             Skip for now
           </button>

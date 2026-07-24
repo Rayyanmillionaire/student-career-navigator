@@ -78,12 +78,12 @@ function ResetPasswordForm() {
             <CheckCircle2 className="w-8 h-8 text-green-500" />
           </div>
           <h2 className="text-xl font-bold">Password Reset Complete</h2>
-          <p className="text-sm text-muted-foreground px-4">
+          <p className="text-[14px] text-[#6B7280] px-4">
             Your password has been successfully changed. You can now use your new password to sign in.
           </p>
           <Link 
             href="/login" 
-            className="mt-6 w-full h-11 bg-accent-blue hover:bg-accent-blue/90 text-white rounded-md font-semibold flex items-center justify-center transition-colors"
+            className="mt-6 w-full h-[56px] bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl font-bold text-[16px] flex items-center justify-center transition-colors"
           >
             Go to Login
           </Link>
@@ -126,7 +126,7 @@ function ResetPasswordForm() {
       </form>
 
       {!token && (
-        <div className="mt-4 p-3 bg-danger/10 border border-danger/20 rounded-md text-danger text-sm text-center">
+        <div className="mt-4 p-4 bg-[#FEF2F2] border border-[#FECACA] rounded-xl text-[#EF4444] text-[14px] text-center font-medium">
           Missing reset token. Please use the link sent to your email.
         </div>
       )}
@@ -134,7 +134,7 @@ function ResetPasswordForm() {
       <div className="text-center mt-6">
         <Link 
           href="/login" 
-          className="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
+          className="inline-flex items-center gap-2 text-[14px] font-semibold text-[#6B7280] hover:text-[#111827] transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           Back to login
