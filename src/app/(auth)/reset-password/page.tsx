@@ -68,7 +68,7 @@ function ResetPasswordForm() {
 
   if (isSuccess) {
     return (
-      <AuthLayout>
+      <AuthLayout title="Success" subtitle="Password Reset Complete">
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
