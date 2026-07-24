@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -15,6 +15,7 @@ import { TextInput } from "@/components/auth/TextInput";
 import { PasswordInput } from "@/components/auth/PasswordInput";
 import { LoadingButton } from "@/components/auth/LoadingButton";
 import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons";
+import { TrustSection } from "@/components/auth/TrustSection";
 import { authService } from "@/lib/authService";
 import useAuth from "@/hooks/useAuth";
 
@@ -26,7 +27,7 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const returnUrl = searchParams.get("returnUrl") || "/dashboard";
@@ -133,12 +134,22 @@ export default function LoginPage() {
 
       <SocialLoginButtons isLoading={isSubmitting} />
 
-      <div className="text-center text-xs text-muted-foreground pt-2">
+      <div className="text-center text-sm text-muted-foreground pt-4">
         Don't have an account?{" "}
         <Link href="/signup" className="font-semibold text-accent-blue hover:text-accent-blue/80 transition-colors">
           Create Account
         </Link>
       </div>
+
+      <TrustSection />
     </AuthLayout>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

@@ -16,6 +16,7 @@ import { PasswordInput } from "@/components/auth/PasswordInput";
 import { PasswordStrength } from "@/components/auth/PasswordStrength";
 import { LoadingButton } from "@/components/auth/LoadingButton";
 import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons";
+import { TrustSection } from "@/components/auth/TrustSection";
 import { authService } from "@/lib/authService";
 import useAuth from "@/hooks/useAuth";
 
@@ -149,19 +150,22 @@ export default function SignupPage() {
           />
           
           <div className="space-y-1.5 w-full">
-            <label className="text-xs font-medium text-secondary-foreground">I am a...</label>
+            <label className="text-[14px] font-medium text-secondary-foreground invisible">Role</label>
             <div className="relative">
-              <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground z-10" />
+              <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground z-10" />
               <select
                 {...register("role")}
-                className="w-full h-10 pl-10 pr-4 bg-muted/50 border border-border rounded-md text-sm text-foreground focus:outline-none focus:border-accent-blue focus:ring-2 focus:ring-accent-blue/20 appearance-none transition-all duration-200"
+                className="w-full h-[52px] pl-[44px] pr-4 bg-background dark:bg-zinc-900 border border-border rounded-[14px] text-sm text-foreground focus:outline-none focus:border-accent-blue focus:ring-2 focus:ring-accent-blue/30 appearance-none transition-all duration-300"
               >
                 <option value="student">Student</option>
                 <option value="faculty">Faculty</option>
                 <option value="recruiter">Recruiter</option>
               </select>
+              <label className="absolute left-[44px] top-2 text-[10px] font-semibold tracking-wide uppercase text-muted-foreground pointer-events-none z-10">
+                I am a...
+              </label>
             </div>
-            {errors.role && <span className="text-danger text-[11px] font-medium">{errors.role.message}</span>}
+            {errors.role && <span className="text-danger text-[12px] font-medium px-1">{errors.role.message}</span>}
           </div>
         </div>
 
@@ -199,12 +203,14 @@ export default function SignupPage() {
 
       <SocialLoginButtons isLoading={isSubmitting} />
 
-      <div className="text-center text-xs text-muted-foreground pt-2">
+      <div className="text-center text-sm text-muted-foreground pt-4">
         Already have an account?{" "}
         <Link href="/login" className="font-semibold text-accent-blue hover:text-accent-blue/80 transition-colors">
           Sign In
         </Link>
       </div>
+      
+      <TrustSection />
     </AuthLayout>
   );
 }

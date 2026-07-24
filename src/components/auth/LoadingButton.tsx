@@ -15,7 +15,7 @@ export function LoadingButton({ isLoading, loadingText, children, className, dis
       whileTap={!disabled && !isLoading ? { scale: 0.98 } : undefined}
       disabled={disabled || isLoading}
       className={cn(
-        "relative w-full h-11 rounded-md font-sans text-sm font-bold text-white shadow-lg overflow-hidden transition-all duration-200",
+        "relative w-full h-[56px] rounded-[14px] font-sans text-[15px] font-bold text-white shadow-[0_8px_20px_-8px_rgba(var(--accent-blue),0.4)] hover:shadow-[0_12px_24px_-8px_rgba(var(--accent-purple),0.6)] hover:-translate-y-0.5 overflow-hidden transition-all duration-300",
         disabled || isLoading
           ? "opacity-70 cursor-not-allowed bg-accent-blue/80 shadow-none"
           : "bg-gradient-to-r from-accent-blue to-accent-purple hover:brightness-110 shadow-accent-blue/20",
