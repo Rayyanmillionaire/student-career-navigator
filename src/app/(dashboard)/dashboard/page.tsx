@@ -38,7 +38,8 @@ export default function DashboardPage() {
   const profileCompletion = useMemo(() => {
     if (!user) return 0;
     const fields = [
-      user.name,
+      user.firstName,
+      user.lastName,
       user.email,
       user.college,
       user.major,
@@ -190,7 +191,7 @@ export default function DashboardPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground font-sans">
-            Good morning, {user?.name.split(" ")[0]}! 👋
+            Good morning, {user?.firstName}! 👋
           </h1>
           <p className="text-xs text-muted-foreground mt-0.5">
             Here is your career timeline overview.

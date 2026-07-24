@@ -1,209 +1,210 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import toast from "react-hot-toast";
+import { Mail, Lock, User as UserIcon, GraduationCap, Briefcase } from "lucide-react";
 import { motion } from "framer-motion";
-import { User as UserIcon, Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
+
+import AuthLayout from "@/components/auth/AuthLayout";
+import { TextInput } from "@/components/auth/TextInput";
+import { PasswordInput } from "@/components/auth/PasswordInput";
+import { PasswordStrength } from "@/components/auth/PasswordStrength";
+import { LoadingButton } from "@/components/auth/LoadingButton";
+import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons";
+import { authService } from "@/lib/authService";
 import useAuth from "@/hooks/useAuth";
+
+const signupSchema = z.object({
+  firstName: z.string().min(2, "First name must be at least 2 characters"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  password: z.string()
+    .min(8, "Must be at least 8 characters")
+    .regex(/[A-Z]/, "Must contain an uppercase letter")
+    .regex(/[a-z]/, "Must contain a lowercase letter")
+    .regex(/[0-9]/, "Must contain a number")
+    .regex(/[^A-Za-z0-9]/, "Must contain a special character"),
+  confirmPassword: z.string(),
+  college: z.string().optional(),
+  role: z.enum(["student", "faculty", "recruiter", "admin"]),
+  acceptTerms: z.boolean().refine((val) => val === true, {
+    message: "You must accept the terms and privacy policy",
+  }),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+});
+
+type SignupFormValues = z.infer<typeof signupSchema>;
 
 export default function SignupPage() {
   const router = useRouter();
-  const { signup, isLoading } = useAuth();
+  const { setAuthState } = useAuth();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  // Password strength logic
-  const calculatePasswordStrength = (pass: string) => {
-    if (!pass) return { score: 0, label: "Empty", color: "bg-border", percent: "w-0" };
-    let score = 0;
-    if (pass.length >= 6) score += 1;
-    if (pass.length >= 10) score += 1;
-    if (/[0-9]/.test(pass)) score += 1;
-    if (/[A-Z]/.test(pass)) score += 1;
-    if (/[^a-zA-Z0-9]/.test(pass)) score += 1;
-
-    if (score <= 2) return { score, label: "Weak", color: "bg-red-500", percent: "w-1/3" };
-    if (score <= 4) return { score, label: "Medium", color: "bg-yellow-500", percent: "w-2/3" };
-    return { score, label: "Strong", color: "bg-green-500", percent: "w-full" };
-  };
-
-  const strength = calculatePasswordStrength(password);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMsg(null);
-
-    if (!name || !email || !password || !confirmPassword) {
-      setErrorMsg("All fields are required.");
-      return;
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting, isValid },
+  } = useForm<SignupFormValues>({
+    resolver: zodResolver(signupSchema),
+    mode: "onChange",
+    defaultValues: {
+      role: "student",
     }
+  });
 
-    if (password.length < 6) {
-      setErrorMsg("Password must be at least 6 characters.");
-      return;
-    }
+  const currentPassword = watch("password", "");
 
-    if (password !== confirmPassword) {
-      setErrorMsg("Passwords do not match.");
-      return;
-    }
+  const onSubmit = async (data: SignupFormValues) => {
+    try {
+      const response = await authService.register({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        password: data.password,
+        college: data.college,
+        role: data.role,
+      });
 
-    const res = await signup(name, email, password);
-    if (res.success) {
-      // Auto redirects to dashboard on signup success
-      router.push("/dashboard");
-    } else {
-      setErrorMsg(res.error || "Signup failed. Please try again.");
+      // Save token
+      localStorage.setItem("token", response.token);
+      
+      setAuthState({
+        isAuthenticated: true,
+        isLoading: false,
+        user: response.user,
+      });
+
+      toast.success("Account created successfully!");
+      // Redirect to verify email or dashboard
+      router.push("/verify-email");
+    } catch (error: any) {
+      const message = error.response?.data?.error || "Signup failed. Please try again.";
+      toast.error(message);
     }
   };
 
   return (
-    <div className="space-y-6">
-      {/* Title */}
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold font-sans tracking-tight text-foreground">
-          Create account
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Get started with CareerNav today.
-        </p>
-      </div>
-
-      {/* Alert box */}
-      {errorMsg && (
-        <div className="flex items-start gap-2.5 p-3 rounded-lg bg-danger/10 border border-danger/25 text-danger text-xs animate-shake">
-          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-          <span>{errorMsg}</span>
-        </div>
-      )}
-
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Name */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-medium text-secondary-foreground" htmlFor="name">
-            Full Name
-          </label>
-          <div className="relative">
-            <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground" />
-            <input
-              type="text"
-              id="name"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="John Doe"
-              autoComplete="off"
-              className="w-full h-10 pl-10 pr-4 bg-muted border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent-blue focus:ring-2 focus:ring-accent-blue/20 transition-all duration-200"
-            />
-          </div>
+    <AuthLayout title="Create Account" subtitle="Join CareerNav and accelerate your future.">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        
+        <div className="grid grid-cols-2 gap-3">
+          <TextInput
+            label="First Name"
+            placeholder="John"
+            icon={<UserIcon />}
+            {...register("firstName")}
+            error={errors.firstName?.message}
+          />
+          <TextInput
+            label="Last Name"
+            placeholder="Doe"
+            icon={<UserIcon />}
+            {...register("lastName")}
+            error={errors.lastName?.message}
+          />
         </div>
 
-        {/* Email */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-medium text-secondary-foreground" htmlFor="email">
-            Email Address
-          </label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground" />
-            <input
-              type="email"
-              id="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="name@example.com"
-              autoComplete="off"
-              className="w-full h-10 pl-10 pr-4 bg-muted border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent-blue focus:ring-2 focus:ring-accent-blue/20 transition-all duration-200"
-            />
-          </div>
+        <TextInput
+          label="Email Address"
+          type="email"
+          placeholder="name@example.com"
+          icon={<Mail />}
+          {...register("email")}
+          error={errors.email?.message}
+        />
+
+        <div className="space-y-1">
+          <PasswordInput
+            label="Password"
+            placeholder="••••••••"
+            icon={<Lock />}
+            {...register("password")}
+            error={errors.password?.message}
+          />
+          <PasswordStrength password={currentPassword} />
         </div>
 
-        {/* Password */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-medium text-secondary-foreground" htmlFor="password">
-            Password
-          </label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground" />
-            <input
-              type={showPassword ? "text" : "password"}
-              id="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              autoComplete="new-password"
-              className="w-full h-10 pl-10 pr-10 bg-muted border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent-blue focus:ring-2 focus:ring-accent-blue/20 transition-all duration-200"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {showPassword ? <EyeOff className="w-4.5 h-4.5" /> : <Eye className="w-4.5 h-4.5" />}
-            </button>
-          </div>
+        <PasswordInput
+          label="Confirm Password"
+          placeholder="••••••••"
+          icon={<Lock />}
+          {...register("confirmPassword")}
+          error={errors.confirmPassword?.message}
+        />
 
-          {/* Password strength gauge */}
-          {password && (
-            <div className="space-y-1 pt-1">
-              <div className="flex justify-between items-center text-[10px]">
-                <span className="text-muted-foreground">Password strength:</span>
-                <span className="font-semibold text-foreground uppercase tracking-wide">
-                  {strength.label}
-                </span>
-              </div>
-              <div className="h-1 bg-border rounded-full overflow-hidden">
-                <div className={`h-full ${strength.percent} ${strength.color} transition-all duration-300`} />
-              </div>
+        <div className="grid grid-cols-2 gap-3">
+          <TextInput
+            label="College / University (Optional)"
+            placeholder="e.g. Stanford"
+            icon={<GraduationCap />}
+            {...register("college")}
+            error={errors.college?.message}
+          />
+          
+          <div className="space-y-1.5 w-full">
+            <label className="text-xs font-medium text-secondary-foreground">I am a...</label>
+            <div className="relative">
+              <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground z-10" />
+              <select
+                {...register("role")}
+                className="w-full h-10 pl-10 pr-4 bg-muted/50 border border-border rounded-md text-sm text-foreground focus:outline-none focus:border-accent-blue focus:ring-2 focus:ring-accent-blue/20 appearance-none transition-all duration-200"
+              >
+                <option value="student">Student</option>
+                <option value="faculty">Faculty</option>
+                <option value="recruiter">Recruiter</option>
+              </select>
             </div>
-          )}
-        </div>
-
-        {/* Confirm Password */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-medium text-secondary-foreground" htmlFor="confirm-password">
-            Confirm Password
-          </label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground" />
-            <input
-              type={showPassword ? "text" : "password"}
-              id="confirm-password"
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="••••••••"
-              autoComplete="new-password"
-              className="w-full h-10 pl-10 pr-4 bg-muted border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent-blue focus:ring-2 focus:ring-accent-blue/20 transition-all duration-200"
-            />
+            {errors.role && <span className="text-danger text-[11px] font-medium">{errors.role.message}</span>}
           </div>
         </div>
 
-        {/* Submit */}
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full h-10 mt-4 rounded-md font-sans text-sm font-semibold text-white bg-gradient-to-r from-accent-blue to-accent-purple hover:brightness-110 active:scale-[0.98] shadow-lg shadow-accent-blue/20 disabled:opacity-50 disabled:pointer-events-none transition-all duration-150"
+        <label className="flex items-start gap-2.5 pt-2 cursor-pointer group">
+          <div className="pt-0.5">
+            <input 
+              type="checkbox" 
+              {...register("acceptTerms")}
+              className="w-4 h-4 rounded border-border text-accent-blue focus:ring-accent-blue/20 bg-muted/50 cursor-pointer"
+            />
+          </div>
+          <span className="text-[11px] text-muted-foreground leading-relaxed group-hover:text-foreground transition-colors">
+            By creating an account, you agree to our{" "}
+            <Link href="/terms" className="text-accent-blue font-medium hover:underline">Terms of Service</Link>{" "}
+            and{" "}
+            <Link href="/privacy" className="text-accent-blue font-medium hover:underline">Privacy Policy</Link>.
+          </span>
+        </label>
+        {errors.acceptTerms && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-danger text-[11px] font-medium mt-1">
+            {errors.acceptTerms.message}
+          </motion.div>
+        )}
+
+        <LoadingButton 
+          type="submit" 
+          isLoading={isSubmitting} 
+          disabled={!isValid}
+          loadingText="Creating Account..."
+          className="mt-4"
         >
-          {isLoading ? "Creating account..." : "Sign Up"}
-        </button>
+          Create Account
+        </LoadingButton>
       </form>
 
-      {/* Redirect back to Login */}
-      <div className="text-center text-xs text-muted-foreground">
+      <SocialLoginButtons isLoading={isSubmitting} />
+
+      <div className="text-center text-xs text-muted-foreground pt-2">
         Already have an account?{" "}
-        <Link href="/login" className="font-semibold text-accent-blue hover:text-accent-blue/85 transition-colors">
+        <Link href="/login" className="font-semibold text-accent-blue hover:text-accent-blue/80 transition-colors">
           Sign In
         </Link>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

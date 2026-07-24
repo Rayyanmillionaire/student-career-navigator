@@ -121,7 +121,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onMenuClick, isSidebarCollapsed 
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className="w-9 h-9 rounded-lg bg-gradient-to-br from-accent-blue/20 to-accent-purple/20 border border-white/5 flex items-center justify-center font-mono text-xs font-semibold text-accent-blue hover:brightness-110 active:scale-95 transition-all duration-150 cursor-pointer select-none"
           >
-            {user ? getInitials(user.name) : "U"}
+            {user ? getInitials(user.firstName + ' ' + user.lastName) : "U"}
           </button>
 
           {/* Context Dropdown menu */}
@@ -136,7 +136,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onMenuClick, isSidebarCollapsed 
               >
                 {/* User details header */}
                 <div className="px-3 py-2 border-b border-white/5 text-left mb-1">
-                  <div className="text-xs font-semibold text-foreground truncate">{user?.name}</div>
+                  <div className="text-xs font-semibold text-foreground truncate">{user?.firstName} {user?.lastName}</div>
                   <div className="text-[10px] text-muted-foreground truncate">{user?.email}</div>
                 </div>
 

@@ -15,7 +15,8 @@ async function main() {
       password: hashedPassword,
     },
     create: {
-      name: 'Rayyan (Admin)',
+      firstName: 'Rayyan',
+      lastName: '(Admin)',
       email: email,
       password: hashedPassword,
       role: 'admin',

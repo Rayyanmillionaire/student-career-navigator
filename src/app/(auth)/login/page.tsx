@@ -2,195 +2,143 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff, KeyRound, AlertCircle, ArrowLeft } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import toast from "react-hot-toast";
+import { Mail, Lock } from "lucide-react";
+import { motion } from "framer-motion";
+
+import AuthLayout from "@/components/auth/AuthLayout";
+import { TextInput } from "@/components/auth/TextInput";
+import { PasswordInput } from "@/components/auth/PasswordInput";
+import { LoadingButton } from "@/components/auth/LoadingButton";
+import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons";
+import { authService } from "@/lib/authService";
 import useAuth from "@/hooks/useAuth";
+
+const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+  rememberMe: z.boolean().optional(),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, isLoading } = useAuth();
+  const searchParams = useSearchParams();
+  const returnUrl = searchParams.get("returnUrl") || "/dashboard";
+  const { setAuthState } = useAuth();
+  
+  const [isShake, setIsShake] = useState(false);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting, isValid },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    mode: "onChange",
+  });
 
-  // Toggle Forgot Password instruction view
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const onSubmit = async (data: LoginFormValues) => {
+    try {
+      const response = await authService.login({
+        email: data.email,
+        password: data.password,
+      });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMsg(null);
+      // Handle remember me with token storage
+      if (data.rememberMe) {
+        localStorage.setItem("token", response.token);
+      } else {
+        sessionStorage.setItem("token", response.token);
+      }
+      
+      setAuthState({
+        isAuthenticated: true,
+        isLoading: false,
+        user: response.user,
+      });
 
-    if (!email || !password) {
-      setErrorMsg("Please enter both email and password.");
-      return;
-    }
-
-    const res = await login(email, password);
-    if (res.success) {
-      router.push("/dashboard");
-    } else {
-      setErrorMsg(res.error || "Invalid email or password.");
+      toast.success("Welcome back!");
+      router.push(returnUrl);
+    } catch (error: any) {
+      // Trigger shake animation on error
+      setIsShake(true);
+      setTimeout(() => setIsShake(false), 500);
+      
+      const message = error.response?.data?.error || "An unexpected error occurred.";
+      toast.error(message);
     }
   };
 
   return (
-    <div className="space-y-6">
-      <AnimatePresence mode="wait">
-        {!showForgotPassword ? (
-          /* LOGIN FORM VIEW */
-          <motion.div
-            key="login-form"
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 10 }}
-            transition={{ duration: 0.25 }}
-            className="space-y-6"
-          >
-            {/* Titles */}
-            <div className="space-y-1">
-              <h1 className="text-2xl font-bold font-sans tracking-tight text-foreground">
-                Welcome back
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Sign in to navigate your learning journey.
-              </p>
-            </div>
+    <AuthLayout title="Welcome Back" subtitle="Log in to continue to your dashboard.">
+      <motion.form 
+        onSubmit={handleSubmit(onSubmit)} 
+        className="space-y-4"
+        animate={isShake ? { x: [-10, 10, -10, 10, 0] } : {}}
+        transition={{ duration: 0.4 }}
+      >
+        <TextInput
+          label="Email Address"
+          type="email"
+          placeholder="name@example.com"
+          icon={<Mail />}
+          {...register("email")}
+          error={errors.email?.message}
+          autoComplete="email"
+        />
 
-            {/* Error alerts */}
-            {errorMsg && (
-              <div className="flex items-start gap-2.5 p-3 rounded-lg bg-danger/10 border border-danger/25 text-danger text-xs animate-shake">
-                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                <span>{errorMsg}</span>
-              </div>
-            )}
-
-            {/* Forms */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Email */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-secondary-foreground" htmlFor="email">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground" />
-                  <input
-                    type="email"
-                    id="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@example.com"
-                    autoComplete="off"
-                    className="w-full h-10 pl-10 pr-4 bg-muted border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent-blue focus:ring-2 focus:ring-accent-blue/20 transition-all duration-200"
-                  />
-                </div>
-              </div>
-
-              {/* Password */}
-              <div className="space-y-1.5">
-                <div className="flex justify-between items-center">
-                  <label className="text-xs font-medium text-secondary-foreground" htmlFor="password">
-                    Password
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => setShowForgotPassword(true)}
-                    className="text-xs font-medium text-accent-blue hover:text-accent-blue/80 transition-colors"
-                  >
-                    Forgot Password?
-                  </button>
-                </div>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground" />
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    id="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    autoComplete="current-password"
-                    className="w-full h-10 pl-10 pr-10 bg-muted border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent-blue focus:ring-2 focus:ring-accent-blue/20 transition-all duration-200"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {showPassword ? <EyeOff className="w-4.5 h-4.5" /> : <Eye className="w-4.5 h-4.5" />}
-                  </button>
-                </div>
-              </div>
-
-              {/* Submit btn */}
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full h-10 mt-2 rounded-md font-sans text-sm font-semibold text-white bg-gradient-to-r from-accent-blue to-accent-purple hover:brightness-110 active:scale-[0.98] shadow-lg shadow-accent-blue/20 disabled:opacity-50 disabled:pointer-events-none transition-all duration-150"
-              >
-                {isLoading ? "Signing in..." : "Sign In"}
-              </button>
-            </form>
-
-            {/* Signup redirects */}
-            <div className="text-center text-xs text-muted-foreground">
-              Don&apos;t have an account?{" "}
-              <Link href="/signup" className="font-semibold text-accent-blue hover:text-accent-blue/85 transition-colors">
-                Sign Up
-              </Link>
-            </div>
-
-
-          </motion.div>
-        ) : (
-          /* FORGOT PASSWORD INSTRUCTION VIEW */
-          <motion.div
-            key="forgot-password"
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -10 }}
-            transition={{ duration: 0.25 }}
-            className="space-y-6"
-          >
-            {/* Back Button */}
-            <button
-              onClick={() => setShowForgotPassword(false)}
-              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group"
+        <div className="space-y-1">
+          <PasswordInput
+            label="Password"
+            placeholder="••••••••"
+            icon={<Lock />}
+            {...register("password")}
+            error={errors.password?.message}
+            autoComplete="current-password"
+          />
+          <div className="flex justify-between items-center px-1 pt-1">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input 
+                type="checkbox" 
+                {...register("rememberMe")}
+                className="w-3.5 h-3.5 rounded border-border text-accent-blue focus:ring-accent-blue/20 bg-muted/50"
+              />
+              <span className="text-xs text-muted-foreground select-none hover:text-foreground transition-colors">Remember Me</span>
+            </label>
+            <Link 
+              href="/forgot-password" 
+              className="text-xs font-semibold text-accent-blue hover:text-accent-blue/80 transition-colors"
             >
-              <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-              <span>Back to Sign In</span>
-            </button>
+              Forgot Password?
+            </Link>
+          </div>
+        </div>
 
-            {/* Icon Block */}
-            <div className="w-12 h-12 rounded-xl bg-accent-blue/10 flex items-center justify-center text-accent-blue">
-              <KeyRound className="w-6 h-6" />
-            </div>
+        <LoadingButton 
+          type="submit" 
+          isLoading={isSubmitting} 
+          disabled={!isValid}
+          loadingText="Authenticating..."
+          className="mt-2"
+        >
+          Sign In
+        </LoadingButton>
+      </motion.form>
 
-            {/* Header */}
-            <div className="space-y-1.5">
-              <h2 className="text-xl font-bold font-sans tracking-tight text-foreground">
-                Reset your password
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                Secure credential management is enforced.
-              </p>
-            </div>
+      <SocialLoginButtons isLoading={isSubmitting} />
 
-            {/* System Info Callout */}
-            <div className="p-4 rounded-xl border border-white/5 bg-white/[0.02] text-sm text-secondary leading-relaxed">
-              Forgot your password? Please contact your college administrator to reset it directly from the Admin Portal.
-            </div>
-
-            {/* Action instructions */}
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              To prevent security locks, your administrator will verify your profile details and perform a password overwrite. After the reset, log back in using the default passcode provided.
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+      <div className="text-center text-xs text-muted-foreground pt-2">
+        Don't have an account?{" "}
+        <Link href="/signup" className="font-semibold text-accent-blue hover:text-accent-blue/80 transition-colors">
+          Create Account
+        </Link>
+      </div>
+    </AuthLayout>
   );
 }

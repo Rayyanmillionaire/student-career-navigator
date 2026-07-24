@@ -8,14 +8,21 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  role      String   @default("student") // 'student' or 'admin'
-  bio       String?
-  phone     String?
-  location  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                  Int       @id @default(autoincrement())
+  firstName           String
+  lastName            String
+  email               String    @unique
+  password            String
+  college             String?
+  role                String    @default("student") // student, faculty, recruiter, admin
+  bio                 String?
+  phone               String?
+  location            String?
+  emailVerified       Boolean   @default(false)
+  resetToken          String?
+  resetTokenExpiry    DateTime?
+  verificationToken   String?
+  verificationExpiry  DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 }
