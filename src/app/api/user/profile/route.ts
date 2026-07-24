@@ -20,7 +20,8 @@ export async function GET(req: Request) {
       where: { id: decoded.userId },
       select: {
         id: true,
-        name: true,
+        firstName: true,
+        lastName: true,
         email: true,
         role: true,
         bio: true,
@@ -55,19 +56,21 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    const { name, bio, phone, location } = body;
+    const { firstName, lastName, bio, phone, location } = body;
 
     const updatedUser = await prisma.user.update({
       where: { id: decoded.userId },
       data: {
-        ...(name && { name }),
+        ...(firstName && { firstName }),
+        ...(lastName && { lastName }),
         ...(bio !== undefined && { bio }),
         ...(phone !== undefined && { phone }),
         ...(location !== undefined && { location }),
       },
       select: {
         id: true,
-        name: true,
+        firstName: true,
+        lastName: true,
         email: true,
         role: true,
         bio: true,
