@@ -25,4 +25,63 @@ model User {
   verificationExpiry  DateTime?
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
+
+  // Relations
+  goals               Goal[]
+  resume              Resume?
+  applications        Application[]
+}
+
+model Goal {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  status      String   @default("TODO") // TODO, IN_PROGRESS, COMPLETED
+  deadline    DateTime?
+  progress    Int      @default(0) // 0 to 100
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Resume {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  summary     String?  @db.Text
+  education   Json?    // Array of { school, degree, field, startDate, endDate, description }
+  experience  Json?    // Array of { company, title, location, startDate, endDate, description }
+  skills      Json?    // Array of strings
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Internship {
+  id           Int      @id @default(autoincrement())
+  title        String
+  company      String
+  location     String
+  type         String   // Remote, Hybrid, On-site
+  description  String   @db.Text
+  requirements Json?    // Array of strings
+  salary       String?
+  deadline     DateTime?
+  isActive     Boolean  @default(true)
+  applications Application[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Application {
+  id           Int        @id @default(autoincrement())
+  userId       Int
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  internshipId Int
+  internship   Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+  status       String     @default("APPLIED") // APPLIED, INTERVIEWING, OFFER, REJECTED
+  appliedAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([userId, internshipId])
 }
